@@ -1,0 +1,88 @@
+<!-- Student Layout Wrapper -->
+<div class="flex h-screen overflow-hidden bg-slate-50">
+  <!-- Sidebar -->
+  <app-side-bar-student></app-side-bar-student>
+
+  <!-- Main Content Container -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <!-- Navbar -->
+    <app-nav-bar-student></app-nav-bar-student>
+
+    <!-- Scrollable Content -->
+    <main class="flex-1 overflow-y-auto relative z-0 focus:outline-none bg-slate-100 flex flex-col transition-all duration-500">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 w-full">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16">
+          <div>
+            <h1 class="text-4xl font-extrabold font-display text-slate-800 tracking-tight mb-2 italic uppercase">Mes Apprentissages</h1>
+            <p class="text-slate-500 font-medium italic tracking-tight uppercase text-[10px] tracking-widest mt-1">Vos inscriptions aux cours</p>
+          </div>
+
+        </header>
+
+        <!-- Filter Pills -->
+        <div class="flex flex-wrap items-center gap-3 mb-10">
+          <button (click)="setFilter('ALL')" 
+                  [class]="'px-5 py-2 rounded-xl text-xs font-bold font-display tracking-widest transition-all uppercase italic ' + 
+                          (activeFilter === 'ALL' ? 'bg-slate-900 text-white' : 'hover:bg-white border border-slate-200 text-slate-500')">
+            Tous les cours
+          </button>
+          <button (click)="setFilter('IN_PROGRESS')" 
+                  [class]="'px-5 py-2 rounded-xl text-xs font-bold font-display tracking-widest transition-all uppercase italic ' + 
+                          (activeFilter === 'IN_PROGRESS' ? 'bg-slate-900 text-white' : 'hover:bg-white border border-slate-200 text-slate-500')">
+            En cours
+          </button>
+          <button (click)="setFilter('COMPLETED')" 
+                  [class]="'px-5 py-2 rounded-xl text-xs font-bold font-display tracking-widest transition-all uppercase italic ' + 
+                          (activeFilter === 'COMPLETED' ? 'bg-slate-900 text-white' : 'hover:bg-white border border-slate-200 text-slate-500')">
+            Terminés
+          </button>
+        </div>
+
+        <!-- Courses Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <!-- Dynamic Course Cards -->
+          <div *ngIf="filteredCourses.length === 0" class="col-span-full py-12 text-center bg-white rounded-3xl border border-dashed border-slate-300">
+             <p class="text-slate-400 font-medium italic">Aucun cours trouvé. Commencez votre apprentissage dès aujourd'hui !</p>
+          </div>
+
+          <div *ngFor="let enrollment of filteredCourses" class="card bg-white border-slate-200/60 overflow-hidden flex flex-col group hover:ring-2 hover:ring-primary-500/20 transition-all">
+            <div class="h-48 bg-slate-200 relative">
+              <img [src]="enrollment.courseThumbnailUrl || 'https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&q=80&w=600'" 
+                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+              <div class="absolute top-4 left-4 flex gap-2">
+                 <span class="px-2 py-1 bg-primary-600 text-white text-[10px] font-bold rounded-lg shadow-lg shadow-primary-600/30 uppercase tracking-widest italic">
+                   Inscrit
+                 </span>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <h3 class="text-lg font-bold text-slate-900 group-hover:text-primary-600 transition-colors mb-2 italic tracking-tight uppercase">
+                {{ enrollment.courseTitle }}
+              </h3>
+              <p class="text-xs text-slate-400 font-medium italic mb-6 uppercase tracking-widest">
+                Enseignant: {{ enrollment.instructorName }}
+              </p>
+              
+              <div class="mt-auto">
+                <div class="flex justify-between items-center mb-3">
+                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Progression</span>
+                   <span class="text-xs font-extrabold text-primary-600 italic">{{ enrollment.progress }}%</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-6">
+                   <div class="h-full bg-primary-500 rounded-full" [style.width.%]="enrollment.progress"></div>
+                </div>
+                <button [routerLink]="['/student/course-detail', enrollment.courseId]" 
+                        class="w-full py-3 bg-slate-900 text-white text-[10px] font-black rounded-xl hover:bg-primary-600 transition-colors italic uppercase tracking-widest shadow-xl shadow-slate-900/10">
+                  Continuer l'apprentissage
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <app-footer-student></app-footer-student>
+    </main>
+  </div>
+</div>

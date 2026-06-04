@@ -1,0 +1,65 @@
+<nav
+  class="h-24 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 px-10 flex items-center justify-between shadow-2xl shadow-slate-900/5 sticky top-0 z-50">
+  <div class="flex items-center gap-12 text-slate-900 italic tracking-tight font-black uppercase">
+    <!-- Admin Portal -->
+    <a routerLink="/admin/dashboard" class="flex items-center gap-4 group">
+      <div
+        class="w-10 h-10 bg-primary-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary-500/30 group-hover:rotate-180 transition-transform duration-500">
+        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+            clip-rule="evenodd" />
+        </svg>
+      </div>
+      <span class="text-xl font-display tracking-widest italic uppercase">Portail <span
+          class="text-primary-600">Admin</span></span>
+    </a>
+
+    <!-- Admin Status Indicators -->
+
+  </div>
+
+  <div class="flex items-center gap-6">
+    <!-- Global Admin Search -->
+
+
+
+
+    <!-- Admin Profile Avatar -->
+    <div class="relative">
+      <div (click)="toggleDropdown()"
+        class="flex items-center gap-4 pl-6 border-l border-slate-200 cursor-pointer group">
+        <div class="text-right hidden sm:block">
+          <div class="text-xs font-black text-slate-900 italic tracking-tight uppercase leading-none mb-1">{{
+            adminProfile?.fullName || 'Console Principale' }}</div>
+          <div class="text-[10px] font-black text-primary-600 uppercase italic tracking-widest leading-none">Accès
+            Autorisé</div>
+        </div>
+        <div
+          class="w-11 h-11 rounded-2xl bg-primary-50 border-2 border-primary-600 shadow-xl overflow-hidden transform group-hover:scale-105 transition-transform group-hover:shadow-primary-600/10 flex items-center justify-center">
+          <img *ngIf="adminProfile?.avatarUrl; else initials" [src]="adminProfile?.avatarUrl"
+            class="w-full h-full object-cover">
+          <ng-template #initials>
+            <span class="text-primary-600 font-black italic">{{ getInitials(adminProfile?.fullName || 'Admin') }}</span>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Dropdown -->
+      <div *ngIf="isDropdownOpen"
+        class="absolute right-0 mt-4 w-56 bg-white border border-slate-100 rounded-3xl shadow-2xl shadow-slate-900/10 py-4 z-50">
+        <div class="px-6 py-4 border-b border-slate-50 mb-2">
+          <p class="text-xs font-black text-slate-900 italic uppercase truncate">{{ adminProfile?.email }}</p>
+        </div>
+        <button (click)="logout()"
+          class="w-full flex items-center gap-3 px-6 py-3 text-[10px] font-black text-rose-500 hover:bg-rose-50 transition-all italic uppercase tracking-widest">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Déconnexion
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

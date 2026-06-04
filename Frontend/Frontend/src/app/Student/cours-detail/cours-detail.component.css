@@ -1,0 +1,26 @@
+.course-detail-page .course-main-card,
+.course-detail-page .course-sidebar-card,
+.course-detail-page .section-card,
+.course-detail-page .lesson-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.course-detail-page .section-card:hover,
+.course-detail-page .lesson-card:hover {
+  border-color: rgb(203 213 225);
+  box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.35);
+}
+
+.course-detail-page .section-expanded {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.8), rgba(255, 255, 255, 1));
+}
+
+.course-detail-page .course-sidebar-card {
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1023px) {
+  .course-detail-page .course-sidebar-card {
+    position: static;
+  }
+}

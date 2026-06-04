@@ -1,0 +1,115 @@
+<!-- Teacher Layout Wrapper -->
+<div class="flex h-screen overflow-hidden bg-white/50">
+  <!-- Sidebar -->
+  <app-side-bar-teacher></app-side-bar-teacher>
+
+  <!-- Main Content Container -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <!-- Navbar -->
+    <app-nav-bar-teacher></app-nav-bar-teacher>
+
+    <!-- Scrollable Content -->
+    <main class="flex-1 overflow-y-auto relative z-0 focus:outline-none bg-slate-100 flex flex-col transition-all duration-500">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
+        <header class="mb-12">
+          <h1 class="text-4xl font-extrabold font-display text-slate-900 tracking-tight mb-2 italic uppercase">
+            {{ editMode ? 'Modifier le Cours' : 'Créer un Nouveau Cours' }}
+          </h1>
+          <p class="text-slate-500 font-medium italic">
+            {{ editMode ? 'Mettez à jour et perfectionnez les informations de votre cours.' : 'Lancez votre cours et commencez à enseigner dès aujourd\'hui.' }}
+          </p>
+        </header>
+
+        <form (ngSubmit)="onSubmit()" class="space-y-10">
+          <!-- Form Container -->
+          <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-12 shadow-2xl shadow-slate-200/50 italic">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div class="space-y-8">
+                <div>
+                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Identité du Cours</label>
+                  <input type="text" [(ngModel)]="courseData.title" name="title" placeholder="Ex: Master Class : Angular Avancé" 
+                         class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-900 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic tracking-tight uppercase">
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Catégorie</label>
+                  <select [(ngModel)]="courseData.categoryId" name="categoryId"
+                          class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-600 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic uppercase appearance-none cursor-pointer">
+                    <option [ngValue]="null" disabled>Sélectionner une Catégorie...</option>
+                    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                   <div>
+                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Prix ($)</label>
+                     <input type="number" [(ngModel)]="courseData.price" name="price" [disabled]="courseData.free"
+                            class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-900 focus:outline-none italic uppercase shadow-inner disabled:opacity-50">
+                   </div>
+                   <div>
+                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Accès</label>
+                     <div class="flex items-center gap-4 h-[60px]">
+                        <button type="button" (click)="courseData.free = true; courseData.price = 0" 
+                                [class]="courseData.free ? 'bg-primary-600 text-white' : 'bg-slate-50 text-slate-400'"
+                                class="flex-1 h-full rounded-2xl font-black text-[10px] uppercase italic tracking-widest transition-all">Gratuit</button>
+                        <button type="button" (click)="courseData.free = false" 
+                                [class]="!courseData.free ? 'bg-primary-600 text-white' : 'bg-slate-50 text-slate-400'"
+                                class="flex-1 h-full rounded-2xl font-black text-[10px] uppercase italic tracking-widest transition-all">Payant</button>
+                     </div>
+                   </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                   <div>
+                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Langue</label>
+                     <select [(ngModel)]="courseData.language" name="language" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-600 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic uppercase appearance-none cursor-pointer">
+                        <option value="EN">Anglais</option>
+                        <option value="FR">Français</option>
+                        <option value="ES">Espagnol</option>
+                     </select>
+                   </div>
+                   <div>
+                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Niveau</label>
+                     <select [(ngModel)]="courseData.level" name="level" class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-600 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic uppercase appearance-none cursor-pointer">
+                        <option value="BEGINNER">Débutant</option>
+                        <option value="INTERMEDIATE">Intermédiaire</option>
+                        <option value="ADVANCED">Avancé</option>
+                     </select>
+                   </div>
+                </div>
+              </div>
+
+              <div class="space-y-8">
+                <div>
+                  <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Description</label>
+                  <textarea rows="9" [(ngModel)]="courseData.description" name="description" placeholder="Définissez le parcours pédagogique..." 
+                            class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all resize-none italic leading-relaxed uppercase tracking-tight"></textarea>
+                </div>
+                <div>
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Image du Cours (URL)</label>
+                   <input type="text" [(ngModel)]="courseData.thumbnailUrl" name="thumbnailUrl" placeholder="https://..." class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-900 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic tracking-tight uppercase">
+                </div>
+                <div>
+                   <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 italic">Vidéo de Présentation (URL)</label>
+                   <input type="text" [(ngModel)]="courseData.previewVideoUrl" name="previewVideoUrl" placeholder="https://..." class="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm font-black text-slate-900 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all italic tracking-tight uppercase">
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-10 border-t border-slate-100">
+              <button type="submit" [disabled]="loading" class="btn-primary py-6 px-16 text-sm font-black italic tracking-tight uppercase shadow-2xl shadow-primary-600/30">
+                {{ loading ? 'Synchronisation...' : (editMode ? 'Mettre à jour' : 'Créer le Cours') }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Course Image -->
+          
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <app-footer-teacher></app-footer-teacher>
+    </main>
+  </div>
+</div>

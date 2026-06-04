@@ -1,0 +1,62 @@
+<nav class="h-20 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-50">
+  <div class="flex items-center gap-8">
+
+    <!-- Brand -->
+    <a routerLink="/student/dashboard" class="flex items-center gap-2 group">
+      <div class="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center text-white">
+        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M10.394 2.827a1 1 0 00-.788 0l-7 3a1 1 0 000 1.846l7 3a1 1 0 00.788 0l7-3a1 1 0 000-1.846l-7-3zM6.733 12.606l-3.339-1.431a1 1 0 00-1.394.942V15a1 1 0 00.553.894l4.5 2.25a1 1 0 00.894 0l4.5-2.25a1 1 0 00.553-.894v-2.883a1 1 0 00-1.394-.942l-3.339 1.431a1 1 0 01-.788 0z" />
+        </svg>
+      </div>
+      <span class="text-lg font-bold text-slate-900">
+        EduFlow <span class="text-primary-600">Étudiant</span>
+      </span>
+    </a>
+
+    <!-- Nav Links -->
+    <div class="hidden lg:flex items-center gap-5">
+      <a *ngFor="let item of quickLinks" [routerLink]="item.route" routerLinkActive="text-primary-600 after:w-full"
+        class="relative py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary-600 after:transition-all">
+        {{ item.label }}
+      </a>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+
+
+
+
+    <!-- Avatar + Name + Logout -->
+    <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+
+      <!-- Name & Role -->
+      <div class="text-right hidden sm:block">
+        <div class="text-xs font-semibold text-slate-900">
+          {{ fullName }}
+        </div>
+        <div class="text-[10px] font-medium text-primary-600 uppercase">
+          {{ role }}
+        </div>
+      </div>
+
+      <!-- Initials Avatar -->
+      <div class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center">
+        <span class="text-primary-600 font-semibold text-sm">
+          {{ fullName.charAt(0).toUpperCase() || '?' }}
+        </span>
+      </div>
+
+      <!-- Logout -->
+      <button (click)="logout()" title="Déconnexion"
+        class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</nav>

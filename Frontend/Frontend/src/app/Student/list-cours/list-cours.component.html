@@ -1,0 +1,103 @@
+<!-- Student Layout Wrapper -->
+<div class="flex h-screen overflow-hidden bg-slate-50">
+  <!-- Sidebar -->
+  <app-side-bar-student></app-side-bar-student>
+
+  <!-- Main Content Container -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative border-l border-slate-200/50">
+    <!-- Navbar -->
+    <app-nav-bar-student></app-nav-bar-student>
+
+    <!-- Scrollable Content -->
+    <main class="flex-1 overflow-y-auto relative z-0 focus:outline-none bg-slate-100 flex flex-col transition-all duration-500">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-1 w-full">
+        
+        <!-- Header & Search -->
+        <header class="mb-16">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div class="max-w-xl">
+              <h1 class="text-5xl font-extrabold font-display text-slate-800 tracking-tight italic uppercase mb-4 leading-none">Catalogue des Cours</h1>
+              <p class="text-slate-500 font-medium italic tracking-tight uppercase text-[10px] tracking-widest leading-relaxed">Découvrez de nouveaux cours pour enrichir vos connaissances.</p>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="w-full md:w-96 relative group">
+               <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-slate-400 group-focus-within:text-primary-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+               </div>
+               <input type="text" 
+                      [(ngModel)]="searchKeyword"
+                      (keyup.enter)="onSearch()"
+                      placeholder="Rechercher un cours..." 
+                      class="block w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-[2rem] text-sm font-bold placeholder-slate-300 focus:outline-none focus:border-primary-500/30 focus:ring-4 focus:ring-primary-500/5 transition-all shadow-xl shadow-slate-200/40 italic">
+               <button (click)="onSearch()" class="absolute right-3 top-3 bottom-3 bg-slate-900 text-white px-6 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-primary-600 transition-all italic">Chercher</button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex flex-col items-center justify-center py-32 opacity-50">
+           <div class="animate-spin rounded-full h-16 w-16 border-4 border-primary-600 border-t-transparent mb-6"></div>
+           <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] italic animate-pulse">Chargement du catalogue...</p>
+        </div>
+
+        <!-- Grid -->
+        <div *ngIf="!loading">
+           <!-- Empty Search State -->
+           <div *ngIf="courses.length === 0" class="text-center py-32 bg-white rounded-[4rem] border-2 border-dashed border-slate-100 italic">
+              <p class="text-slate-300 font-black uppercase tracking-widest text-sm mb-2">Aucun cours trouvé.</p>
+              <p class="text-slate-200 text-xs uppercase font-bold tracking-widest leading-none">Essayez d'autres mots-clés.</p>
+           </div>
+
+           <!-- Course Catalog Grid -->
+           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              <div *ngFor="let course of courses" 
+                   class="group bg-white rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/60 hover:shadow-primary-500/10 transition-all duration-700 flex flex-col border border-white hover:border-primary-500/20">
+                 
+                 <!-- Image Area -->
+                 <div class="h-64 relative overflow-hidden">
+                    <img [src]="course.thumbnailUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=600'" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <!-- Floating Tags -->
+                    <div class="absolute top-6 left-6 flex flex-col gap-2">
+                       <span class="px-3 py-1 bg-white/90 backdrop-blur text-slate-900 text-[9px] font-black rounded-lg uppercase tracking-widest italic shadow-xl">{{ course.categoryName }}</span>
+                       <span class="px-3 py-1 bg-primary-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest italic shadow-xl shadow-primary-600/20">{{ course.level }}</span>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6">
+                        <div class="bg-white px-4 py-2 rounded-2xl shadow-2xl text-slate-900 font-black italic tracking-tighter text-lg">
+                           {{ course.free ? 'GRATUIT' : '$' + course.price }}
+                        </div>
+                    </div>
+                 </div>
+
+                 <!-- Info Area -->
+                 <div class="p-8 flex-1 flex flex-col">
+                    <h2 class="text-2xl font-black text-slate-800 uppercase italic tracking-tight mb-4 group-hover:text-primary-600 transition-colors line-clamp-2 leading-[1.1]">{{ course.title }}</h2>
+                    <p class="text-slate-400 text-xs font-bold uppercase italic tracking-wide line-clamp-3 mb-8 leading-relaxed">{{ course.description }}</p>
+                    
+                    <div class="mt-auto pt-8 border-t border-slate-50 flex items-center justify-between">
+                       <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 uppercase border-2 border-white shadow-sm">{{ course.instructorName.charAt(0) }}</div>
+                          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic leading-none">{{ course.instructorName }}</span>
+                       </div>
+                       
+                       <button [routerLink]="['/student/course-detail', course.id]" 
+                               class="px-6 py-3 bg-slate-100 text-slate-900 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all italic tracking-tighter shadow-sm flex items-center gap-2">
+                          Voir les détails
+                          <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                       </button>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <app-footer-student></app-footer-student>
+    </main>
+  </div>
+</div>

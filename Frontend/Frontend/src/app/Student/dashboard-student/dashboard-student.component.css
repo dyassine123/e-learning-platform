@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+/* Slight polish for reduced-motion users */
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

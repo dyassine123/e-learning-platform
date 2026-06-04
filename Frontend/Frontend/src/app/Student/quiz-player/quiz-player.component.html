@@ -1,0 +1,123 @@
+<div class="flex h-screen overflow-hidden bg-slate-50">
+  <app-side-bar-student></app-side-bar-student>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <app-nav-bar-student></app-nav-bar-student>
+
+    <main class="flex-1 overflow-y-auto bg-slate-100">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+        <header>
+          <h1 class="text-3xl font-extrabold text-slate-900">Lecteur de Quiz</h1>
+          <p class="text-sm text-slate-500 mt-1">Sélectionnez votre cours et répondez au quiz publié.</p>
+        </header>
+
+        <div *ngIf="error" class="rounded-xl bg-rose-50 text-rose-700 px-4 py-3 text-sm font-medium">{{ error }}</div>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase">Cours inscrit</label>
+              <select
+                class="w-full mt-2 rounded-xl border border-slate-200 px-3 py-2 bg-white"
+                [ngModel]="selectedCourseId"
+                (ngModelChange)="onCourseChange($event)"
+              >
+                <option *ngFor="let course of enrolledCourses" [value]="course.courseId">{{ course.courseTitle }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase">Quiz</label>
+              <select
+                class="w-full mt-2 rounded-xl border border-slate-200 px-3 py-2 bg-white"
+                [ngModel]="selectedQuizId"
+                (ngModelChange)="selectQuiz($event)"
+              >
+                <option [ngValue]="undefined">Sélectionner un quiz</option>
+                <option *ngFor="let quiz of quizzes" [value]="quiz.id">
+                  {{ quiz.title }}{{ hasSubmitted(quiz.id) ? ' (déjà soumis)' : '' }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- All Quizzes List -->
+        <section *ngIf="allQuizzes.length > 0" class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold text-slate-900">Tous les Quiz Disponibles</h2>
+            <span class="text-xs font-black uppercase text-slate-400">{{ allQuizzes.length }} au total</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <button
+              *ngFor="let quiz of allQuizzes"
+              (click)="onCourseChange(quiz.courseId); selectQuiz(quiz.id)"
+              class="text-left bg-white border border-slate-200 rounded-2xl p-4 hover:border-primary-500 hover:shadow-lg transition-all group"
+              [ngClass]="selectedQuizId === quiz.id ? 'border-primary-500 ring-2 ring-primary-500/10' : ''"
+            >
+              <div class="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-1">{{ quiz.courseTitle }}</div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition-colors">{{ quiz.title }}</h3>
+              <div class="mt-3 flex items-center justify-between">
+                <span *ngIf="hasSubmitted(quiz.id)" class="text-[9px] font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Soumis</span>
+                <span *ngIf="!hasSubmitted(quiz.id)" class="text-[9px] font-black uppercase text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">En attente</span>
+                <svg class="h-4 w-4 text-slate-300 group-hover:text-primary-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </section>
+
+        <div *ngIf="loading" class="py-12 flex justify-center">
+          <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary-600 border-t-transparent"></div>
+        </div>
+
+        <section *ngIf="!loading && selectedQuizId && !submitted && questions.length > 0" class="bg-white border border-slate-200 rounded-2xl p-6">
+          <div class="space-y-6">
+            <article *ngFor="let q of questions; let idx = index" class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="text-xs uppercase font-bold text-slate-400">Question {{ idx + 1 }} • {{ q.type }} • {{ q.points }} pts</div>
+              <h3 class="text-base font-bold text-slate-900 mt-1">{{ q.questionText }}</h3>
+
+              <div class="mt-4 space-y-2" *ngIf="q.type === 'MCQ'">
+                <label *ngFor="let choice of q.choices" class="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2">
+                  <input
+                    type="radio"
+                    [name]="'q-' + q.id"
+                    [checked]="answers.get(q.id)?.selectedChoiceId === choice.id"
+                    (change)="selectChoice(q.id, choice.id)"
+                  />
+                  <span class="text-sm text-slate-800">{{ choice.choiceText }}</span>
+                </label>
+              </div>
+
+              <div class="mt-4 space-y-2" *ngIf="q.type !== 'MCQ'">
+                <textarea
+                  rows="2"
+                  [ngModel]="answers.get(q.id)?.answerText || ''"
+                  (ngModelChange)="setTextAnswer(q.id, $event)"
+                  class="w-full rounded-xl border border-slate-200 px-3 py-2"
+                  [placeholder]="q.type === 'TRUE_FALSE' ? 'Écrivez vrai ou faux' : 'Écrivez votre réponse'"
+                ></textarea>
+              </div>
+            </article>
+          </div>
+
+          <div class="mt-6">
+            <button (click)="submitQuiz()" [disabled]="submitting"
+              class="px-6 py-3 rounded-xl bg-primary-600 text-white font-bold hover:bg-primary-700 disabled:bg-primary-300">
+              {{ submitting ? 'Soumission en cours...' : 'Soumettre le quiz' }}
+            </button>
+          </div>
+        </section>
+
+        <section *ngIf="submitted" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
+          <h2 class="text-lg font-bold text-emerald-800">Soumission terminée</h2>
+          <p class="text-sm text-emerald-700 mt-1">Score : {{ submitted.score }} / {{ quizTotalPoints }}</p>
+          <p class="text-xs text-emerald-700 mt-1">Soumis le : {{ submitted.submittedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p class="text-xs text-emerald-700 mt-1">Vous ne pouvez pas soumettre ce quiz à nouveau.</p>
+        </section>
+      </div>
+      <app-footer-student></app-footer-student>
+    </main>
+  </div>
+</div>

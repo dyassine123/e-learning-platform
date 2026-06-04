@@ -1,0 +1,17 @@
+.lesson-pdf-frame {
+  min-height: 70vh;
+  border: 0;
+  background: #f1f5f9;
+  /* Soften high contrast white/black PDF rendering */
+  filter: brightness(0.97) contrast(0.94) saturate(0.95);
+}
+
+@media (max-width: 1024px) {
+  .lesson-pdf-frame {
+    min-height: 60vh;
+  }
+}
+
+.lesson-soft-theme {
+  color: #1e293b;
+}

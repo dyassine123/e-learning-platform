@@ -1,0 +1,252 @@
+<div class="flex h-screen overflow-hidden bg-slate-50">
+  <app-side-bar-student></app-side-bar-student>
+
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <app-nav-bar-student></app-nav-bar-student>
+
+    <main class="flex-1 overflow-y-auto relative z-0 focus:outline-none bg-slate-100 flex flex-col">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex-1 w-full">
+        <!-- Hero -->
+        <header
+          class="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 text-white shadow-xl shadow-slate-900/10 mb-10"
+        >
+          <div class="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-400/40 via-transparent to-transparent"></div>
+          <div class="relative px-6 py-10 sm:px-10 sm:py-12 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div class="max-w-2xl">
+              <p class="text-sm font-medium text-primary-200/90 mb-2">{{ greeting }}</p>
+              <h1 class="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
+                {{ studentName }}
+              </h1>
+              <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
+                Suivez votre progression, reprenez là où vous vous étiez arrêté et découvrez de nouveaux cours.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3 shrink-0">
+              <a
+                routerLink="/student/courses"
+                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-sm font-semibold text-white transition-colors"
+              >
+                Mes cours
+              </a>
+              <a
+                routerLink="/student/quiz-player"
+                class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-sm font-semibold text-white transition-colors"
+              >
+                Quiz
+              </a>
+              <a routerLink="/student/explore" class="btn-primary text-sm !py-2.5 !px-5 !shadow-lg">
+                Explorer
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <div *ngIf="error" class="mb-8 rounded-2xl bg-rose-50 border border-rose-100 text-rose-800 px-4 py-3 text-sm font-medium">
+          {{ error }}
+        </div>
+
+        <!-- Loading shell -->
+        <div *ngIf="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <div *ngFor="let _ of [1,2,3,4]" class="h-28 rounded-2xl bg-slate-200/80 animate-pulse"></div>
+        </div>
+        <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div *ngFor="let _ of [1,2,3]" class="h-72 rounded-2xl bg-slate-200/80 animate-pulse"></div>
+        </div>
+
+        <!-- Stats -->
+        <div *ngIf="!loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Inscrits</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900 tabular-nums">{{ stats.totalCourses }}</p>
+                <p class="mt-1 text-sm text-slate-500">Cours actifs</p>
+              </div>
+              <div class="w-11 h-11 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Temps d'étude</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900 tabular-nums truncate" [class.opacity-50]="statsLoading">
+                  {{ stats.learningTimeLabel }}
+                </p>
+                <p class="mt-1 text-sm text-slate-500">Estimé selon progression</p>
+              </div>
+              <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Terminés</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900 tabular-nums" [class.opacity-50]="statsLoading">
+                  {{ stats.coursesCompleted }}
+                </p>
+                <p class="mt-1 text-sm text-slate-500">Cours finis</p>
+              </div>
+              <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Quiz</p>
+                <p class="mt-2 text-3xl font-bold text-slate-900 tabular-nums">{{ stats.quizzesCompleted }}</p>
+                <p class="mt-1 text-sm text-slate-500">Quiz passés</p>
+              </div>
+              <div class="w-11 h-11 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Continue learning -->
+        <section *ngIf="!loading" class="mb-14">
+          <div class="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-display">Continuer l'apprentissage</h2>
+              <p class="text-sm text-slate-500 mt-1">Reprenez là où vous vous étiez arrêté</p>
+            </div>
+            <a routerLink="/student/courses" class="text-sm font-semibold text-primary-600 hover:text-primary-700 shrink-0">
+              Voir tout
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              *ngIf="featuredEnrollments.length === 0"
+              class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white/80 px-6 py-14 text-center"
+            >
+              <p class="text-slate-600 font-medium">Vous n'êtes inscrit à aucun cours pour le moment.</p>
+              <a routerLink="/student/explore" class="inline-block mt-4 text-sm font-semibold text-primary-600 hover:text-primary-700">
+                Parcourir le catalogue →
+              </a>
+            </div>
+
+            <article
+              *ngFor="let enrollment of featuredEnrollments; trackBy: trackByCourseId"
+              class="group flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm hover:shadow-lg hover:border-slate-300/80 transition-all duration-300"
+            >
+              <div class="h-44 bg-slate-200 relative overflow-hidden">
+                <img
+                  [src]="enrollment.courseThumbnailUrl || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800'"
+                  [alt]="enrollment.courseTitle"
+                  class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                />
+                <div
+                  class="absolute bottom-3 left-3 right-3 rounded-lg bg-slate-900/75 backdrop-blur-sm px-3 py-2 text-xs text-white font-medium"
+                  *ngIf="getCourseProgress(enrollment.courseId).totalLessons > 0"
+                >
+                  <div class="flex justify-between gap-2 mb-1.5">
+                    <span>Progression</span>
+                    <span class="tabular-nums">{{ getCourseProgress(enrollment.courseId).progressPercent }}%</span>
+                  </div>
+                  <div class="h-1.5 rounded-full bg-white/20 overflow-hidden">
+                    <div
+                      class="h-full rounded-full bg-primary-400 transition-all duration-500"
+                      [style.width.%]="getCourseProgress(enrollment.courseId).progressPercent"
+                    ></div>
+                  </div>
+                  <p class="mt-1.5 text-white/80 tabular-nums">
+                    {{ getCourseProgress(enrollment.courseId).completedLessons }} / {{ getCourseProgress(enrollment.courseId).totalLessons }} leçons
+                  </p>
+                </div>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <h3 class="text-lg font-bold text-slate-900 leading-snug line-clamp-2">{{ enrollment.courseTitle }}</h3>
+                <p class="text-sm text-slate-500 mt-1">Enseignant : {{ enrollment.instructorName }}</p>
+                <p class="text-xs text-slate-400 mt-2" *ngIf="enrollment.enrolledAt">
+                  Inscrit le {{ enrollment.enrolledAt | date: 'dd/MM/yyyy' }}
+                </p>
+                <div class="mt-auto pt-5">
+                  <a
+                    [routerLink]="['/student/course-detail', enrollment.courseId]"
+                    class="flex w-full items-center justify-center rounded-xl bg-slate-900 text-white text-sm font-semibold py-3 hover:bg-primary-600 transition-colors"
+                  >
+                    Ouvrir le cours
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Catalog -->
+        <section *ngIf="!loading" class="mb-8">
+          <div class="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 font-display">Recommandé pour vous</h2>
+              <p class="text-sm text-slate-500 mt-1">Cours publiés que vous pouvez explorer</p>
+            </div>
+            <a routerLink="/student/explore" class="text-sm font-semibold text-primary-600 hover:text-primary-700 shrink-0">
+              Voir plus
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              *ngIf="publishedCourses.length === 0"
+              class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white/80 px-6 py-12 text-center text-slate-600 text-sm"
+            >
+              Aucun cours publié n'est disponible pour le moment.
+            </div>
+
+            <article
+              *ngFor="let course of publishedCourses; trackBy: trackByPublishedId"
+              class="flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+            >
+              <div class="h-44 bg-slate-200 relative">
+                <img
+                  [src]="course.thumbnailUrl || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800'"
+                  [alt]="course.title"
+                  class="w-full h-full object-cover"
+                />
+                <span
+                  class="absolute top-3 right-3 rounded-lg bg-white/95 px-2.5 py-1 text-xs font-bold text-slate-800 shadow-sm"
+                >
+                  {{ course.level }}
+                </span>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <p class="text-xs font-semibold text-primary-600 uppercase tracking-wide">{{ course.categoryName }}</p>
+                <h3 class="text-lg font-bold text-slate-900 mt-1 leading-snug line-clamp-2">{{ course.title }}</h3>
+                <p class="text-sm text-slate-500 mt-2 line-clamp-2 flex-1">{{ course.description }}</p>
+                <div class="mt-5 flex items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                  <span class="text-base font-bold text-slate-900">{{ course.free ? 'Gratuit' : (course.price + ' $') }}</span>
+                  <a
+                    [routerLink]="['/student/course-detail', course.id]"
+                    class="inline-flex items-center rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-800 hover:bg-primary-600 hover:text-white transition-colors"
+                  >
+                    Voir
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <app-footer-student></app-footer-student>
+    </main>
+  </div>
+</div>
